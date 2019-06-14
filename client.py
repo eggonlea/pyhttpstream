@@ -4,13 +4,14 @@ from tornado.websocket import websocket_connect
 
 class Client(object):
     def __init__(self, url, timeout):
+        self.count = 0
         self.binary = False
         self.url = url
         self.timeout = timeout
         self.ioloop = IOLoop.instance()
         self.ws = None
         self.connect()
-        PeriodicCallback(self.keep_alive, 1000).start()
+        PeriodicCallback(self.keep_alive, 2000).start()
         self.ioloop.start()
 
     @gen.coroutine
@@ -35,12 +36,15 @@ class Client(object):
                 break
 
     def keep_alive(self):
-        print('keep alive')
+        print('%d keep alive' % self.count)
         if self.ws is None:
             self.connect()
         else:
-            self.ws.write_message("keep alive", self.binary)
+            self.ws.write_message("%d keep alive" % self.count, self.binary)
+            self.count += 1
             self.binary = not self.binary
+            if self.count > 3:
+                exit()
 
 if __name__ == "__main__":
     client = Client("ws://localhost:8001", 5)
