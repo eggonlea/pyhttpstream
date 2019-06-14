@@ -6,8 +6,13 @@ class EchoWebSocket(websocket.WebSocketHandler):
         print("Websocket Opened")
 
     def on_message(self, message):
-        print(message)
-        self.write_message(u"You said: %s" % message)
+        print(type(message))
+        if isinstance(message, str):
+            print(message)
+            self.write_message(u"You said: %s" % message)
+        else:
+            print(len(message))
+            self.write_message(u"You said: %d" % len(message))
 
     def on_close(self):
         print("Websocket closed")

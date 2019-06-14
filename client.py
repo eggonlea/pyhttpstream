@@ -4,6 +4,7 @@ from tornado.websocket import websocket_connect
 
 class Client(object):
     def __init__(self, url, timeout):
+        self.binary = False
         self.url = url
         self.timeout = timeout
         self.ioloop = IOLoop.instance()
@@ -38,7 +39,8 @@ class Client(object):
         if self.ws is None:
             self.connect()
         else:
-            self.ws.write_message("keep alive")
+            self.ws.write_message("keep alive", self.binary)
+            self.binary = not self.binary
 
 if __name__ == "__main__":
     client = Client("ws://localhost:8001", 5)
